@@ -1,0 +1,46 @@
+[
+  { "key": "mercedes", "name": "Mercedes-Benz", "parent": null },
+  { "key": "mercedes_c", "name": "C klass", "parent": "mercedes" },
+  { "key": "mercedes_c160", "name": "C 160", "parent": "mercedes_c" },
+  { "key": "mercedes_c180", "name": "C 180", "parent": "mercedes_c" },
+  { "key": "mercedes_c200", "name": "C 200", "parent": "mercedes_c" },
+  { "key": "mercedes_c220", "name": "C 220", "parent": "mercedes_c" },
+
+  { "key": "bmw", "name": "BMW", "parent": null },
+  { "key": "bmw_3", "name": "3 seeria", "parent": "bmw" },
+  { "key": "bmw_315", "name": "315", "parent": "bmw_3" },
+  { "key": "bmw_316", "name": "316", "parent": "bmw_3" },
+  { "key": "bmw_317", "name": "317", "parent": "bmw_3" },
+  { "key": "bmw_318", "name": "318", "parent": "bmw_3" },
+  { "key": "bmw_319", "name": "319", "parent": "bmw_3" },
+
+  { "key": "bmw_4", "name": "4 seeria", "parent": "bmw" },
+
+  { "key": "bmw_5", "name": "5 seeria", "parent": "bmw" },
+  { "key": "bmw_518", "name": "518", "parent": "bmw_5" },
+  { "key": "bmw_520", "name": "520", "parent": "bmw_5" },
+  { "key": "bmw_523", "name": "523", "parent": "bmw_5" },
+  { "key": "bmw_524", "name": "524", "parent": "bmw_5" },
+  { "key": "bmw_525", "name": "525", "parent": "bmw_5" },
+
+  { "key": "audi", "name": "Audi", "parent": null },
+  { "key": "audi_a", "name": "A seeria", "parent": "audi" },
+  { "key": "audi_etron", "name": "e-tron", "parent": "audi" },
+
+  { "key": "audi_q", "name": "Q seeria", "parent": "audi" },
+  { "key": "audi_q2", "name": "Q2", "parent": "audi_q" },
+  { "key": "audi_q3", "name": "Q3", "parent": "audi_q" },
+  { "key": "audi_q4", "name": "Q4", "parent": "audi_q" },
+  { "key": "audi_q5", "name": "Q5", "parent": "audi_q" },
+  { "key": "audi_q7", "name": "Q7", "parent": "audi_q" },
+
+  { "key": "audi_rs", "name": "RS seeria", "parent": "audi" },
+  { "key": "audi_rs4", "name": "RS4", "parent": "audi_rs" },
+  { "key": "audi_rs5", "name": "RS5", "parent": "audi_rs" },
+  { "key": "audi_rs6", "name": "RS6", "parent": "audi_rs" },
+
+  { "key": "audi_tt", "name": "TT", "parent": "audi" },
+
+  { "key": "citroen", "name": "Citroën", "parent": null },
+  { "key": "muu", "name": "Muu", "parent": null }
+]
