@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="et">
+<head>
+    <meta charset="utf-8"/>
+    <title>FormulaTree</title>
+    <style>
+        body { font-family: system-ui, Avenir, Helvetica, Arial, sans-serif; padding: 24px; max-width: 500px; }
+        h1 { font-size: large; }
+        form { display: flex; flex-direction: column }
+        label { font-size: small; display: block; margin-top: 12px; }
+        .buttons { margin-top: 12px; margin-bottom: 12px; }
+    </style>
+</head>
+
+<body>
+
+<h1>Palun sisestage enda kontaktandmed ning automargid, millest olete huvitatud</h1>
+
+<form>
+    <label for="nameInput">Ees- ja perekonnanimi:</label>
+    <input id="nameInput" name="name" type="text" autocomplete="name"/>
+
+
+    <label for="phoneInput">Kontakttelefon:</label>
+    <input id="phoneInput" name="phone" type="text"/>
+
+
+    <label for="carSelect">Automargid:</label>
+    <select id="carSelect" multiple size="20" aria-label="carSelect"></select>
+
+    <div>
+        <label>
+            <input id="licenseCheckbox" type="checkbox"/>
+            Kas Teil on kehtiv juhiluba?
+        </label>
+    </div>
+
+    <div class="buttons">
+        <button type="button" onclick="submitForm()">Salvesta</button>
+    </div>
+
+</form>
+
+<script>
+    function addOptions(options) {
+        const select = document.getElementById('carSelect');
+
+        options.forEach(option => {
+            const el = document.createElement('option');
+            el.value = option.key;
+
+            const indent = '\u00A0'.repeat(option.level * 2);
+            el.innerHTML = indent + option.name;
+
+            select.appendChild(el);
+
+            if (option.children && option.children.length > 0) {
+                addOptions(option.children);
+            }
+        });
+    }
+
+    async function loadData() {
+        const res = await fetch('http://localhost:8080/api/car-options');
+        const data = await res.json();
+
+        addOptions(data);
+    }
+
+    function submitForm() {
+        //TODO
+    }
+
+    window.onload = loadData;
+</script>
+
+</body>
+</html>
