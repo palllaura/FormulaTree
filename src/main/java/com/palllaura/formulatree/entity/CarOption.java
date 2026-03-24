@@ -32,6 +32,12 @@ public class CarOption {
     private Long id;
 
     /**
+     * Unique key to link parent-child relationships in JSON.
+     */
+    @Column(nullable = false, unique = true)
+    private String key;
+
+    /**
      * Car option name.
      */
     @Column(nullable = false)
@@ -41,7 +47,7 @@ public class CarOption {
      * Hierarchy level (0 = brand, 1 = series, 2 = model).
      */
     @Column(nullable = false)
-    private Integer level;
+    private int level;
 
     /**
      * Parent option for hierarchy (optional).

@@ -87,6 +87,7 @@ public class CarOptionDataLoader implements CommandLineRunner {
         for (CarOptionJson json : jsonList) {
             CarOption option = new CarOption();
             option.setName(json.getName());
+            option.setKey(json.getKey());
             map.put(json.getKey(), option);
         }
 
