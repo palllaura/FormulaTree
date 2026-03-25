@@ -13,6 +13,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
@@ -152,4 +153,64 @@ class SubmissionServiceTest {
         assertThat(response.getCarOptionKeys())
                 .containsExactlyInAnyOrder("bmw", "audi");
     }
+
+    @Test
+    void shouldMapRequestToSubmissionEntity() {
+        SubmissionRequest request = createValidRequest();
+        mockRepositoryBehaviour(request);
+
+        service.createSubmission(request);
+
+        verify(submissionRepository).save(argThat(submission ->
+                submission.getName().equals("Test User") &&
+                        submission.getPhone().equals("+3720000000") &&
+                        submission.getHasLicense().equals(true) &&
+                        submission.getCarOptions().size() == 2
+        ));
+    }
+
+    @Test
+    void shouldUpdateExistingSubmission() {
+        SubmissionRequest request = createValidRequest();
+        request.setEditSubmissionId(1L);
+
+        Submission existing = new Submission();
+        existing.setId(1L);
+
+        when(submissionRepository.findById(1L))
+                .thenReturn(Optional.of(existing));
+
+        mockRepositoryBehaviour(request);
+
+        SubmissionResponse response = service.updateCurrentSubmission(request);
+
+        verify(submissionRepository).save(existing);
+        assertThat(response.getValid()).isTrue();
+    }
+
+    @Test
+    void shouldReturnInvalidWhenIdIsMissing() {
+        SubmissionRequest request = createValidRequest();
+
+        SubmissionResponse response = service.updateCurrentSubmission(request);
+
+        assertThat(response.getValid()).isFalse();
+        verify(submissionRepository, never()).save(any());
+    }
+
+    @Test
+    void shouldReturnInvalidWhenSubmissionNotFound() {
+        SubmissionRequest request = createValidRequest();
+        request.setEditSubmissionId(1L);
+
+        when(submissionRepository.findById(1L))
+                .thenReturn(Optional.empty());
+
+        SubmissionResponse response = service.updateCurrentSubmission(request);
+
+        assertThat(response.getValid()).isFalse();
+        verify(submissionRepository, never()).save(any());
+    }
+
+
 }

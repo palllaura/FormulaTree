@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Service class to handle all submission-related actions.
@@ -48,20 +49,61 @@ public class SubmissionService {
             return invalidResponse(errors);
         }
 
-        List<CarOption> options =
-                carOptionRepository.findAllByKeyIn(request.getCarOptionKeys());
-
-        Submission submission = new Submission();
-        submission.setName(request.getName().trim());
-        submission.setPhone(request.getPhone());
-        submission.setCarOptions(new LinkedHashSet<>(options));
-        submission.setHasLicense(request.getHasLicense());
-
+        Submission submission = buildSubmission(request, new Submission());
         submissionRepository.save(submission);
 
         LOGGER.info("Successfully created submission with id: {}", submission.getId());
 
         return toResponse(submission);
+    }
+
+    /**
+     * Update existing submission if request is valid.
+     */
+    @Transactional
+    public SubmissionResponse updateCurrentSubmission(SubmissionRequest request) {
+        List<String> errors = new ArrayList<>();
+
+        if (request.getEditSubmissionId() == null) {
+            LOGGER.warn("Missing submission ID");
+            errors.add("Muudatuste salvestamine ebaõnnestus.");
+            return invalidResponse(errors);
+        }
+
+        Optional<Submission> optional =
+                submissionRepository.findById(request.getEditSubmissionId());
+
+        if (optional.isEmpty()) {
+            LOGGER.warn("Submission not found");
+            errors.add("Muudatuste salvestamine ebaõnnestus.");
+            return invalidResponse(errors);
+        }
+
+        if (!validateRequest(request, errors)) {
+            return invalidResponse(errors);
+        }
+
+        Submission submission = buildSubmission(request, optional.get());
+        submissionRepository.save(submission);
+
+        LOGGER.info("Successfully updated submission with id: {}", submission.getId());
+
+        return toResponse(submission);
+    }
+
+    /**
+     * Common method for creating/updating submission.
+     */
+    private Submission buildSubmission(SubmissionRequest request, Submission submission) {
+        List<CarOption> options =
+                carOptionRepository.findAllByKeyIn(request.getCarOptionKeys());
+
+        submission.setName(request.getName().trim());
+        submission.setPhone(request.getPhone());
+        submission.setCarOptions(new LinkedHashSet<>(options));
+        submission.setHasLicense(request.getHasLicense());
+
+        return submission;
     }
 
     /**
