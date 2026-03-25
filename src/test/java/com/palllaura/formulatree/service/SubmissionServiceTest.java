@@ -27,6 +27,8 @@ class SubmissionServiceTest {
     @Mock
     private CarOptionRepository carOptionRepository;
 
+    @Mock SubmissionValidator validator;
+
     @InjectMocks
     private SubmissionService service;
 
@@ -58,10 +60,10 @@ class SubmissionServiceTest {
     }
 
     /**
-     * Helper method to mock repository actions.
+     * Helper method to mock actions.
      * @param request submission request.
      */
-    private void mockRepositoryBehaviour(SubmissionRequest request) {
+    private void mockBehaviour(SubmissionRequest request) {
         when(carOptionRepository.findAllByKeyIn(request.getCarOptionKeys()))
                 .thenReturn(createCarOptions());
 
@@ -71,12 +73,13 @@ class SubmissionServiceTest {
                     s.setId(1L);
                     return s;
                 });
+        when(validator.validate(any())).thenReturn(List.of());
     }
 
     @Test
     void shouldCallCarOptionRepository() {
         SubmissionRequest request = createValidRequest();
-        mockRepositoryBehaviour(request);
+        mockBehaviour(request);
 
         service.createSubmission(request);
 
@@ -86,7 +89,7 @@ class SubmissionServiceTest {
     @Test
     void shouldSaveSubmission() {
         SubmissionRequest request = createValidRequest();
-        mockRepositoryBehaviour(request);
+        mockBehaviour(request);
 
         service.createSubmission(request);
 
@@ -96,7 +99,7 @@ class SubmissionServiceTest {
     @Test
     void shouldReturnValidResponse() {
         SubmissionRequest request = createValidRequest();
-        mockRepositoryBehaviour(request);
+        mockBehaviour(request);
 
         SubmissionResponse response = service.createSubmission(request);
 
@@ -106,7 +109,7 @@ class SubmissionServiceTest {
     @Test
     void shouldReturnGeneratedId() {
         SubmissionRequest request = createValidRequest();
-        mockRepositoryBehaviour(request);
+        mockBehaviour(request);
 
         SubmissionResponse response = service.createSubmission(request);
 
@@ -116,7 +119,7 @@ class SubmissionServiceTest {
     @Test
     void shouldMapNameToResponse() {
         SubmissionRequest request = createValidRequest();
-        mockRepositoryBehaviour(request);
+        mockBehaviour(request);
 
         SubmissionResponse response = service.createSubmission(request);
 
@@ -126,7 +129,7 @@ class SubmissionServiceTest {
     @Test
     void shouldMapPhoneToResponse() {
         SubmissionRequest request = createValidRequest();
-        mockRepositoryBehaviour(request);
+        mockBehaviour(request);
 
         SubmissionResponse response = service.createSubmission(request);
 
@@ -136,7 +139,7 @@ class SubmissionServiceTest {
     @Test
     void shouldMapHasLicenseToResponse() {
         SubmissionRequest request = createValidRequest();
-        mockRepositoryBehaviour(request);
+        mockBehaviour(request);
 
         SubmissionResponse response = service.createSubmission(request);
 
@@ -146,7 +149,7 @@ class SubmissionServiceTest {
     @Test
     void shouldMapCarOptionKeysToResponse() {
         SubmissionRequest request = createValidRequest();
-        mockRepositoryBehaviour(request);
+        mockBehaviour(request);
 
         SubmissionResponse response = service.createSubmission(request);
 
@@ -157,7 +160,7 @@ class SubmissionServiceTest {
     @Test
     void shouldMapRequestToSubmissionEntity() {
         SubmissionRequest request = createValidRequest();
-        mockRepositoryBehaviour(request);
+        mockBehaviour(request);
 
         service.createSubmission(request);
 
@@ -180,7 +183,7 @@ class SubmissionServiceTest {
         when(submissionRepository.findById(1L))
                 .thenReturn(Optional.of(existing));
 
-        mockRepositoryBehaviour(request);
+        mockBehaviour(request);
 
         SubmissionResponse response = service.updateCurrentSubmission(request);
 

@@ -11,7 +11,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Optional;
@@ -26,16 +25,19 @@ public class SubmissionService {
 
     private final SubmissionRepository submissionRepository;
     private final CarOptionRepository carOptionRepository;
+    private final SubmissionValidator validator;
 
     /**
      * Service constructor.
      * @param submissionRepository submission repository.
-     * @param carOptionRepository car options repository.
+     * @param carOptionRepository  car options repository.
      */
     public SubmissionService(SubmissionRepository submissionRepository,
-                             CarOptionRepository carOptionRepository) {
+                             CarOptionRepository carOptionRepository,
+                             SubmissionValidator validator) {
         this.submissionRepository = submissionRepository;
         this.carOptionRepository = carOptionRepository;
+        this.validator = validator;
     }
 
     /**
@@ -43,9 +45,9 @@ public class SubmissionService {
      */
     @Transactional
     public SubmissionResponse createSubmission(SubmissionRequest request) {
-        List<String> errors = new ArrayList<>();
+        List<String> errors = validator.validate(request);
 
-        if (!validateRequest(request, errors)) {
+        if (!errors.isEmpty()) {
             return invalidResponse(errors);
         }
 
@@ -62,12 +64,9 @@ public class SubmissionService {
      */
     @Transactional
     public SubmissionResponse updateCurrentSubmission(SubmissionRequest request) {
-        List<String> errors = new ArrayList<>();
-
         if (request.getEditSubmissionId() == null) {
             LOGGER.warn("Missing submission ID");
-            errors.add("Muudatuste salvestamine ebaõnnestus.");
-            return invalidResponse(errors);
+            return invalidResponse(List.of("Muudatuste salvestamine ebaõnnestus."));
         }
 
         Optional<Submission> optional =
@@ -75,11 +74,11 @@ public class SubmissionService {
 
         if (optional.isEmpty()) {
             LOGGER.warn("Submission not found");
-            errors.add("Muudatuste salvestamine ebaõnnestus.");
-            return invalidResponse(errors);
+            return invalidResponse(List.of("Muudatuste salvestamine ebaõnnestus."));
         }
 
-        if (!validateRequest(request, errors)) {
+        List<String> errors = validator.validate(request);
+        if (!errors.isEmpty()) {
             return invalidResponse(errors);
         }
 
@@ -104,13 +103,6 @@ public class SubmissionService {
         submission.setHasLicense(request.getHasLicense());
 
         return submission;
-    }
-
-    /**
-     * Validate request fields.
-     */
-    private boolean validateRequest(SubmissionRequest req, List<String> errors) {
-        return true;
     }
 
     /**
