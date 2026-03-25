@@ -16,6 +16,12 @@ public class SubmissionValidator {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SubmissionValidator.class);
 
+    public static final String NAME_MISSING = "Ees- ja perekonnanimi puudub.";
+    public static final String NAME_INCOMPLETE = "Palun sisestage nii ees- kui perekonnanimi.";
+    public static final String PHONE_INVALID = "Kontakttelefon puudub või on ebakorrektne.";
+    public static final String CAR_OPTIONS_MISSING = "Vähemalt üks automark peab olema valitud.";
+    public static final String LICENSE_MISSING = "Palun märkige, kas Teil on kehtiv juhiluba.";
+
     /**
      * Validates all fields of a submission request and returns list of errors.
      */
@@ -40,13 +46,13 @@ public class SubmissionValidator {
      */
     private void validateName(String name, List<String> errors) {
         if (name == null || name.trim().isEmpty()) {
-            errors.add("Ees- ja perekonnanimi puudub.");
+            errors.add(NAME_MISSING);
             return;
         }
 
         String[] parts = name.trim().split("\\s+");
         if (parts.length < 2) {
-            errors.add("Palun sisestage nii ees- kui perekonnanimi.");
+            errors.add(NAME_INCOMPLETE);
         }
     }
 
@@ -57,7 +63,7 @@ public class SubmissionValidator {
      */
     private void validatePhone(String phone, List<String> errors) {
         if (phone == null || !phone.matches("^[+]?[0-9 ]{5,20}$")) {
-            errors.add("Kontakttelefon puudub või on ebakorrektne.");
+            errors.add(PHONE_INVALID);
         }
     }
 
@@ -66,7 +72,7 @@ public class SubmissionValidator {
      */
     private void validateCarOptions(List<String> keys, List<String> errors) {
         if (keys == null || keys.isEmpty()) {
-            errors.add("Vähemalt üks automark peab olema valitud.");
+            errors.add(CAR_OPTIONS_MISSING);
         }
     }
 
@@ -75,7 +81,7 @@ public class SubmissionValidator {
      */
     private void validateLicense(Boolean hasLicense, List<String> errors) {
         if (hasLicense == null) {
-            errors.add("Palun märkige, kas Teil on kehtiv juhiluba.");
+            errors.add(LICENSE_MISSING);
         }
     }
 }

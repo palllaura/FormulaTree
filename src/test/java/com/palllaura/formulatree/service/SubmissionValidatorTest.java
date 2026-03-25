@@ -31,7 +31,7 @@ class SubmissionValidatorTest {
 
         List<String> errors = validator.validate(req);
 
-        assertThat(errors).contains("Ees- ja perekonnanimi puudub.");
+        assertThat(errors).contains(SubmissionValidator.NAME_MISSING);
     }
 
     @Test
@@ -41,7 +41,7 @@ class SubmissionValidatorTest {
 
         List<String> errors = validator.validate(req);
 
-        assertThat(errors).contains("Ees- ja perekonnanimi puudub.");
+        assertThat(errors).contains(SubmissionValidator.NAME_MISSING);
     }
 
     @Test
@@ -51,7 +51,7 @@ class SubmissionValidatorTest {
 
         List<String> errors = validator.validate(req);
 
-        assertThat(errors).contains("Palun sisestage nii ees- kui perekonnanimi.");
+        assertThat(errors).contains(SubmissionValidator.NAME_INCOMPLETE);
     }
 
     @Test
@@ -61,7 +61,7 @@ class SubmissionValidatorTest {
 
         List<String> errors = validator.validate(req);
 
-        assertThat(errors).contains("Kontakttelefon puudub või on ebakorrektne.");
+        assertThat(errors).contains(SubmissionValidator.PHONE_INVALID);
     }
 
     @Test
@@ -71,7 +71,7 @@ class SubmissionValidatorTest {
 
         List<String> errors = validator.validate(req);
 
-        assertThat(errors).contains("Kontakttelefon puudub või on ebakorrektne.");
+        assertThat(errors).contains(SubmissionValidator.PHONE_INVALID);
     }
 
     @Test
@@ -81,7 +81,7 @@ class SubmissionValidatorTest {
 
         List<String> errors = validator.validate(req);
 
-        assertThat(errors).contains("Vähemalt üks automark peab olema valitud.");
+        assertThat(errors).contains(SubmissionValidator.CAR_OPTIONS_MISSING);
     }
 
     @Test
@@ -91,7 +91,7 @@ class SubmissionValidatorTest {
 
         List<String> errors = validator.validate(req);
 
-        assertThat(errors).contains("Vähemalt üks automark peab olema valitud.");
+        assertThat(errors).contains(SubmissionValidator.CAR_OPTIONS_MISSING);
     }
 
     @Test
@@ -101,7 +101,7 @@ class SubmissionValidatorTest {
 
         List<String> errors = validator.validate(req);
 
-        assertThat(errors).contains("Palun märkige, kas Teil on kehtiv juhiluba.");
+        assertThat(errors).contains(SubmissionValidator.LICENSE_MISSING);
     }
 
     @Test
