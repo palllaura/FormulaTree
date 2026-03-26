@@ -23,6 +23,18 @@ class CarOptionServiceTest {
     @InjectMocks
     private CarOptionService service;
 
+    /**
+     * Helper method to create test CarOption.
+     */
+    private CarOption createOption(String key, String name, int level, CarOption parent) {
+        CarOption option = new CarOption();
+        option.setKey(key);
+        option.setName(name);
+        option.setLevel(level);
+        option.setParent(parent);
+        return option;
+    }
+
     @Test
     void shouldReturnEmptyListWhenNoData() {
         when(repository.findAll()).thenReturn(List.of());
@@ -82,15 +94,65 @@ class CarOptionServiceTest {
         assertThat(child.getLevel()).isEqualTo(1);
     }
 
-    /**
-     * Helper method to create test CarOption.
-     */
-    private CarOption createOption(String key, String name, int level, CarOption parent) {
-        CarOption option = new CarOption();
-        option.setKey(key);
-        option.setName(name);
-        option.setLevel(level);
-        option.setParent(parent);
-        return option;
+    @Test
+    void shouldSortRootElementsAlphabetically() {
+        CarOption bmw = createOption("bmw", "BMW", 0, null);
+        CarOption audi = createOption("audi", "Audi", 0, null);
+
+        when(repository.findAll()).thenReturn(List.of(bmw, audi));
+
+        List<CarOptionTreeDto> result = service.getCarOptionTree();
+
+        assertThat(result)
+                .extracting(CarOptionTreeDto::getName)
+                .containsExactly("Audi", "BMW");
     }
+
+    @Test
+    void shouldSortChildrenAlphabetically() {
+        CarOption bmw = createOption("bmw", "BMW", 0, null);
+
+        CarOption series5 = createOption("s5", "5 seeria", 1, bmw);
+        CarOption series3 = createOption("s3", "3 seeria", 1, bmw);
+
+        bmw.getChildren().add(series5);
+        bmw.getChildren().add(series3);
+
+        when(repository.findAll()).thenReturn(List.of(bmw, series5, series3));
+
+        List<CarOptionTreeDto> result = service.getCarOptionTree();
+
+        List<CarOptionTreeDto> children = result.getFirst().getChildren();
+
+        assertThat(children)
+                .extracting(CarOptionTreeDto::getName)
+                .containsExactly("3 seeria", "5 seeria");
+    }
+
+    @Test
+    void shouldSortDeepHierarchyRecursively() {
+        CarOption bmw = createOption("bmw", "BMW", 0, null);
+
+        CarOption series = createOption("series", "3 seeria", 1, bmw);
+        CarOption modelB = createOption("modelB", "320", 2, series);
+        CarOption modelA = createOption("modelA", "318", 2, series);
+
+        bmw.getChildren().add(series);
+        series.getChildren().add(modelB);
+        series.getChildren().add(modelA);
+
+        when(repository.findAll()).thenReturn(List.of(bmw, series, modelB, modelA));
+
+        List<CarOptionTreeDto> result = service.getCarOptionTree();
+
+        List<CarOptionTreeDto> models =
+                result.getFirst()
+                        .getChildren().getFirst()
+                        .getChildren();
+
+        assertThat(models)
+                .extracting(CarOptionTreeDto::getName)
+                .containsExactly("318", "320");
+    }
+
 }

@@ -8,6 +8,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -54,15 +56,36 @@ public class CarOptionService {
 
             for (CarOption child : option.getChildren()) {
                 CarOptionTreeDto childDto = map.get(child.getKey());
-                if (childDto != null) dto.getChildren().add(childDto);
+                if (childDto != null) {
+                    dto.getChildren().add(childDto);
+                }
             }
         }
 
         LOGGER.info("Built car option tree with {} root(s) and {} total options",
                 roots.size(), all.size());
-        return roots.stream()
-                .map(root -> map.get(root.getKey()))
-                .toList();
+
+        List<CarOptionTreeDto> result = new ArrayList<>(
+                roots.stream()
+                        .map(root -> map.get(root.getKey()))
+                        .toList()
+        );
+
+        sortTree(result);
+
+        return result;
     }
 
+    /**
+     * Sort options tree alphabetically.
+     */
+    private void sortTree(List<CarOptionTreeDto> nodes) {
+        nodes.sort(Comparator.comparing(CarOptionTreeDto::getName, String.CASE_INSENSITIVE_ORDER));
+
+        for (CarOptionTreeDto node : nodes) {
+            if (node.getChildren() != null && !node.getChildren().isEmpty()) {
+                sortTree(node.getChildren());
+            }
+        }
+    }
 }
