@@ -9,6 +9,8 @@
         form { display: flex; flex-direction: column }
         label { font-size: small; display: block; margin-top: 12px; }
         .buttons { margin-top: 12px; margin-bottom: 12px; }
+        .info { color: darkred; }
+        .smallText { font-size: smaller }
     </style>
 </head>
 
@@ -36,12 +38,17 @@
     </div>
 
     <div class="buttons">
-        <button type="button" onclick="submitForm()">Salvesta</button>
+        <button id="submitButton" type="button" onclick="submitForm()">Salvesta</button>
     </div>
+
+    <p id="messages" class="info"></p>
+    <p class="smallText">Andmeid on võimalik muuta sama brauseri sessiooni jooksul.</p>
 
 </form>
 
 <script>
+    let currentSubmissionId = null;
+
     function addOptions(options) {
         const select = document.getElementById('carSelect');
 
@@ -67,8 +74,56 @@
         addOptions(data);
     }
 
-    function submitForm() {
-        //TODO
+    async function submitForm() {
+        const select = document.getElementById('carSelect');
+        const nameInput = document.getElementById('nameInput');
+        const phoneInput = document.getElementById('phoneInput');
+        const checkBox = document.getElementById('licenseCheckbox');
+        const messagesEl = document.getElementById('messages');
+        const button = document.getElementById('submitButton');
+
+        button.disabled = true;
+        messagesEl.innerHTML = "";
+
+        const selectedOptions = [];
+        for (const element of select.selectedOptions) {
+            selectedOptions.push(element.value);
+        }
+
+        if (!nameInput.value.trim() || !phoneInput.value.trim() || selectedOptions.length < 1) {
+            messagesEl.style.color = "darkred";
+            messagesEl.innerText = "Palun täitke kõik väljad.";
+            button.disabled = false;
+            return;
+        }
+
+        const res = await fetch('http://localhost:8080/api/submission', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                name: nameInput.value.trim(),
+                phone: phoneInput.value.trim(),
+                carOptionKeys: selectedOptions,
+                hasLicense: checkBox.checked,
+                editSubmissionId: currentSubmissionId
+            }),
+        });
+        const data = await res.json();
+
+        if (res.ok && data.valid) {
+            currentSubmissionId = data.id;
+            messagesEl.style.color = "green";
+            messagesEl.innerText = "Salvestamine õnnestus!";
+        } else {
+            messagesEl.style.color = "darkred";
+
+            if (data.errors && data.errors.length > 0) {
+                messagesEl.innerText = data.errors.join("<br>");
+            } else {
+                messagesEl.innerText = "Salvestamine ebaõnnestus, palun proovige uuesti";
+            }
+        }
+        button.disabled = false;
     }
 
     window.onload = loadData;
