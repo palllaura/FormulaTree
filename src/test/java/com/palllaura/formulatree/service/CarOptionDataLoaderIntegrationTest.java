@@ -2,6 +2,7 @@ package com.palllaura.formulatree.service;
 
 import com.palllaura.formulatree.entity.CarOption;
 import com.palllaura.formulatree.repository.CarOptionRepository;
+import com.palllaura.formulatree.repository.SubmissionRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,8 +23,12 @@ class CarOptionDataLoaderIntegrationTest {
     @Autowired
     private CarOptionDataLoader loader;
 
+    @Autowired
+    private SubmissionRepository submissionRepository;
+
     @BeforeEach
     void setUp() {
+        submissionRepository.deleteAll();
         repository.deleteAll();
         loader.loadIfEmpty();
     }
