@@ -48,11 +48,14 @@
 
 <script>
     let currentSubmissionId = null;
+    const optionMap = {};
 
     function addOptions(options) {
         const select = document.getElementById('carSelect');
 
         options.forEach(option => {
+            optionMap[option.key] = option;
+
             const el = document.createElement('option');
             el.value = option.key;
 
@@ -72,6 +75,33 @@
         const data = await res.json();
 
         addOptions(data);
+
+        document.getElementById('carSelect')
+            .addEventListener('change', handleSelection);
+    }
+
+    function handleSelection() {
+        const select = document.getElementById('carSelect');
+
+        for (const optionEl of select.options) {
+            if (optionEl.selected) {
+                const option = optionMap[optionEl.value];
+                selectChildren(option, select);
+            }
+        }
+    }
+
+    function selectChildren(option, select) {
+        if (!option.children || option.children.length === 0) return;
+
+        for (const child of option.children) {
+            for (const opt of select.options) {
+                if (opt.value === child.key) {
+                    opt.selected = true;
+                }
+            }
+            selectChildren(child, select);
+        }
     }
 
     async function submitForm() {
