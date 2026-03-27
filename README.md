@@ -11,7 +11,7 @@ The application models car brands as a hierarchical tree structure and allows us
 * Spring Data JPA
 * PostgreSQL
 * Docker
-* Vanilla JavaScript (Planned)
+* Vanilla JavaScript
 
 ## Running the Application
 
@@ -32,16 +32,33 @@ The application will be available at:
 ```
 http://localhost:8080
 ```
+## Features
+
+* Hierarchical car options loaded from database
+* Options displayed as indented tree and sorted alphabetically
+* Form validation (all fields required)
+* Data stored in PostgreSQL
+* User can update submission within same browser session
 
 ## Database
 
-* PostgreSQL is used as the primary database
-* Database runs in Docker container
-* Schema is managed automatically by Hibernate (initially)
+Tables:
 
-## Features (Planned)
+* car_option – hierarchical structure
+* submission – user data
+* submission_car_option – relation table
 
-* User contact form with validation
-* Hierarchical car brand selection
-* Data persistence
-* Session-based data editing
+Database dump included in project.
+
+## Time estimate
+Estimated time: ~14 hours
+
+## Feedback
+The task is clear and well-structured.
+
+One ambiguity:
+* Behavior of selecting parent car options (should children be auto-selected or not)
+
+## Screenshots
+
+![formulatree](screenshots/formulatree.png)
